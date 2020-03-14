@@ -1,0 +1,15 @@
+
+login for root
+==============
+./enter .
+host enter . env
+/local/init run
+mesg: ttyname failed: Success
+
+
+sudo with no -S
+===============
+as user:
+user@vostro14:~$ sudo ls
+sudo: no tty present and no askpass program specified
+
