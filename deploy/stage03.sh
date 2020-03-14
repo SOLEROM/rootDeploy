@@ -11,6 +11,8 @@ newRoot=$1
 ubu16add=./ubu16Additions
 
 RUN_IN_CHROOT $newRoot "apt-get update"
+## basic tools
+RUN_IN_CHROOT $newRoot "apt-get install -y vim wget"
 
 echo "choose UTF-8 UTF-8"
 RUN_IN_CHROOT $newRoot "apt-get install -y locales"

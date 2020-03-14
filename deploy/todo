@@ -2,3 +2,7 @@
 exit overload
 
 git init after first build to enable diffs of all rootfs + exclude mount binds
+or use other snapshoot tool
+
+
+add report build print
