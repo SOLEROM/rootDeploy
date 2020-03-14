@@ -1,11 +1,17 @@
 # Deploy Scripts
 
-# files:
+* container deploy scripts
+
+## basic build:
 * [stage01](stage01.sh) - build clean init rootfs with debootstrap
 * [stage02](stage02.sh) - add and patch basic common files to all rootfs
 * [stage03](stage03.sh) - install basic common staff for all rootfs
+* [stage04](stage04.sh) - git init the new roofFs for later compare when needed
 
-# logic:
+## byPurpose Build
+* [stage_xEnable](stage_xEnable.sh) - enable to run X gui staff in container
+
+# Basic build logic:
 
 ## stage01
 

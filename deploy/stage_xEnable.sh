@@ -4,11 +4,12 @@ source ./common.sh
 # help
 function HELP_PRINT {
 echo "==================================================="
-echo "stage04.sh Help Menu:"
+echo "Help Menu:"
+echo "stage_xEnable.sh will make the rootfs abale to run X Gui staff"
+echo "Flags:"
+echo "./stage_xEnable.sh -h|-help|--help             Show this menu"
 echo "Usage:"
-echo "./stage04.sh  -h|-help|--help             Show this menu"
-echo "Run:"
-echo "./stage04.sh  <newFolderPath for newRootfs> "
+echo "./stage04.sh  <FolderPath for newRootfs> "
 echo "==================================================="
 exit 1
 }
@@ -24,12 +25,6 @@ ubu16add=./ubu16Additions
 ##=================================================================================##
 ##=================================================================================##
 
-RUN_IN_CHROOT $newRoot "apt-get update"
-
-echo "choose UTF-8 UTF-8"
-RUN_IN_CHROOT $newRoot "apt-get install -y locales"
-##RUN_IN_CHROOT $newRoot "dpkg-reconfigure locales" 	
-
-RUN_IN_CHROOT $newRoot "apt-get install -y  git"
-
+##fix:Gtk-Message: Failed to load module "canberra-gtk-module"
+RUN_IN_CHROOT $newRoot "apt install libcanberra-gtk-module libcanberra-gtk3-module"
 
