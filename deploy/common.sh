@@ -1,12 +1,42 @@
 ## common bash script help script
+source ./helpMenus.sh
 
-function ROOT_OPTIONS_PRINT {
-echo "=========================================="
-echo "ROOT_OPTIONS:"
-echo "--ubu_64_16	ubuntu x86 16.04" 
-echo "=========================================="
+#######################################################
+#######################################################
+# HANDLE_INPUT_PARAMS for all called scripts
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    -h|-help|--help)
+        $helpFunc
+        shift # past argument
+        ;;
+    -o|-options|--options)
+        ROOT_OPTIONS_PRINT
+        shift # past argument
+        exit 1
+        ;;
+    *)
+        POSITIONAL+=("$1") # save it in an array for later
+        shift # past argument
+        ;;
+
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+#######################################################
+#######################################################
+
+
+function CHECK_INPUT_PARAMS_NUM_ONLY_ONE {
+# check input
+if [ "$1" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
 }
-
 
 function PATCH {
  origFile=$1

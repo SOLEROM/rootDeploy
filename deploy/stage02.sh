@@ -1,30 +1,16 @@
 #!/bin/bash
+##set help function and call common to handle input params
+helpFunc=HELP_PRINT_STAGE02
 source ./common.sh
-
-# help
-function HELP_PRINT {
-echo "==================================================="
-echo "stage02.sh Help Menu:"
-echo "Usage:"
-echo "./stage02.sh  -h|-help|--help     	Show this menu"
-echo "Run:"
-echo "./stage02.sh  <newFolderPath for newRootfs> "
-echo "==================================================="
-exit 1
-}
-
-# check input
-if [ "$#" -ne 1 ]; then
-    echo "Illegal number of parameters"
-    exit 1
-fi
+##check inputs:
+CHECK_INPUT_PARAMS_NUM_ONLY_ONE $#
 newRoot=$1
-ubu16add=./ubu16Additions
+
 
 ##=================================================================================##
 ##=================================================================================##
-
 ###  ubu1604
+ubu16add=./ubu16Additions
 # enter script
 sudo cp $ubu16add/enter $newRoot/enter
 # apt sources
@@ -44,6 +30,6 @@ RUN_IN_CHROOT $newRoot "echo user:user | chpasswd"
 
 
 ## patches
-PATCH $newRoot/etc/profile $ubu16add/pathces/patch01_etc_profile 
+PATCH $newRoot/etc/profile $ubu16add/pathces/patch01_etc_profile
 PATCH $newRoot/home/user/.bashrc $ubu16add/pathces/patch02_home_user_bashrc
 PATCH $newRoot/root/.bashrc $ubu16add/pathces/patch02_root_bashrc

@@ -1,35 +1,11 @@
 #!/bin/bash
+##set help function and call common to handle input params
+helpFunc=HELP_PRINT_STAGE04
 source ./common.sh
-
-# help
-function HELP_PRINT {
-echo "==================================================="
-echo "stage04.sh Help Menu:"
-echo "Usage:"
-echo "./stage04.sh  -h|-help|--help             Show this menu"
-echo "Run:"
-echo "./stage04.sh  <newFolderPath for newRootfs> "
-echo "==================================================="
-exit 1
-}
-
-# check input
-if [ "$#" -ne 1 ]; then
-    echo "Illegal number of parameters"
-    exit 1
-fi
+##check inputs:
+CHECK_INPUT_PARAMS_NUM_ONLY_ONE $#
 newRoot=$1
+
+##=================================================================================##
+##=================================================================================##
 ubu16add=./ubu16Additions
-
-##=================================================================================##
-##=================================================================================##
-
-RUN_IN_CHROOT $newRoot "apt-get update"
-
-echo "choose UTF-8 UTF-8"
-RUN_IN_CHROOT $newRoot "apt-get install -y locales"
-##RUN_IN_CHROOT $newRoot "dpkg-reconfigure locales" 	
-
-RUN_IN_CHROOT $newRoot "apt-get install -y  git"
-
-
