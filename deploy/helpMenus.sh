@@ -54,3 +54,18 @@ echo "./stage04.sh  <newFolderPath for newRootfs> "
 echo "==================================================="
 exit 1
 }
+
+
+
+# help
+function HELP_PRINT_xEnable {
+echo "==================================================="
+echo "Help Menu:"
+echo "stage_xEnable.sh will make the rootfs abale to run X Gui staff"
+echo "Flags:"
+echo "./stage_xEnable.sh -h|-help|--help             Show this menu"
+echo "Usage:"
+echo "stage_xEnable.sh  <FolderPath for newRootfs> "
+echo "==================================================="
+exit 1
+}
