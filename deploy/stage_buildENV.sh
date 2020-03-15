@@ -10,5 +10,4 @@ newRoot=$1
 ##=================================================================================##
 ubu16add=./ubu16Additions
 
-##fix:Gtk-Message: Failed to load module "canberra-gtk-module"
-RUN_IN_CHROOT $newRoot "apt install -y libcanberra-gtk-module libcanberra-gtk3-module"
+RUN_IN_CHROOT $newRoot "apt install -y build-essential"

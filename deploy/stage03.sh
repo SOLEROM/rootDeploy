@@ -12,10 +12,15 @@ ubu16add=./ubu16Additions
 
 RUN_IN_CHROOT $newRoot "apt-get update"
 ## basic tools
-RUN_IN_CHROOT $newRoot "apt-get install -y vim wget"
+RUN_IN_CHROOT $newRoot "apt-get install -y vim wget curl"
+## ubuntu basic
+RUN_IN_CHROOT $newRoot "apt-get install -y software-properties-common"
+
 
 echo "choose UTF-8 UTF-8"
 RUN_IN_CHROOT $newRoot "apt-get install -y locales"
 ##RUN_IN_CHROOT $newRoot "dpkg-reconfigure locales"
 
 RUN_IN_CHROOT $newRoot "apt-get install -y  git"
+RUN_IN_CHROOT $newRoot 'git config --global user.name "user"'
+RUN_IN_CHROOT $newRoot 'git config --global user.email "user@user.com"'
