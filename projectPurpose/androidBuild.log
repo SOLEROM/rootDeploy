@@ -1,0 +1,15 @@
+
+## rspi
+
+export LANG=C
+export LC_ALL=C
+export LC_COLLATE=C
+
+mkdir /andr/ ; cd /andr/
+repo init -u https://github.com/tab-pi/platform_manifest -b nougat
+repo sync
+. build/envsetup.sh
+lunch rpi3-eng
+m 
+
+
