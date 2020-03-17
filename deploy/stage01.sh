@@ -9,7 +9,9 @@ newRoot=$1
 
 ##=================================================================================##
 ##=================================================================================##
+##run host deps install
+RUN sudo ./hostDeps.sh
 ##make sure to have the targer folder
-mkdir -p $newRoot
+RUN mkdir -p $newRoot
 ##ubu1604
-sudo debootstrap --arch=amd64 xenial $newRoot http://archive.ubuntu.com/ubuntu/
+RUN sudo debootstrap --arch=amd64 xenial $newRoot http://archive.ubuntu.com/ubuntu/

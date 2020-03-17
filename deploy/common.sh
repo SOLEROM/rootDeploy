@@ -29,6 +29,24 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 #######################################################
 #######################################################
 
+function ECHO {
+  cmd=$@
+  echo $cmd
+  retVal=$?
+  LOG_WRITE "echo $cmd" "$retVal"
+}
+
+function RUN {
+  local cmd=$@
+  LOG_WRITE "$cmd"
+  eval $cmd
+}
+
+function LOG_WRITE {
+cmd=$1
+logFile=./lastLog
+echo "$cmd " >> $logFile
+}
 
 function CHECK_INPUT_PARAMS_NUM_ONLY_ONE {
 # check input
