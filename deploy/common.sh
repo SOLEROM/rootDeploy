@@ -69,7 +69,7 @@ function PATCH {
  pathFile=$2
  # -N :ignore already patch
  # -r - : disable regect file writing
- sudo patch -N -r - $origFile < $pathFile 1>/dev/null
+ RUN sudo patch -N -r - $origFile < $pathFile 1>/dev/null
  ##TODO: write to log by input param
 }
 
@@ -77,5 +77,5 @@ function PATCH {
 function RUN_IN_CHROOT {
 newRoot=$1
 cmd=$2
-sudo chroot $newRoot /bin/bash -c "$cmd"
+RUN sudo chroot $newRoot /bin/bash -c "$cmd"
 }

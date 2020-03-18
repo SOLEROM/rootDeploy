@@ -9,6 +9,7 @@ newRoot=$1
 ##=================================================================================##
 ##=================================================================================##
 ubu16add=./ubu16Additions
+ECHO "Running stage_newerPython :: install python 3.6 "
 
 RUN_IN_CHROOT $newRoot "add-apt-repository -y ppa:deadsnakes/ppa"
 RUN_IN_CHROOT $newRoot "apt-get update"

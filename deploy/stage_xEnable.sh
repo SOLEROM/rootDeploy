@@ -9,6 +9,7 @@ newRoot=$1
 ##=================================================================================##
 ##=================================================================================##
 ubu16add=./ubu16Additions
+ECHO "Running stage_xEN :: install x support tools "
 
 ##fix:Gtk-Message: Failed to load module "canberra-gtk-module"
 RUN_IN_CHROOT $newRoot "apt install -y libcanberra-gtk-module libcanberra-gtk3-module"

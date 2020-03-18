@@ -9,5 +9,6 @@ newRoot=$1
 ##=================================================================================##
 ##=================================================================================##
 ubu16add=./ubu16Additions
+ECHO "Running stage_buildENV :: install build tools "
 
 RUN_IN_CHROOT $newRoot "apt install -y build-essential"

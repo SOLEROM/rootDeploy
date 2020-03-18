@@ -9,6 +9,7 @@ newRoot=$1
 ##=================================================================================##
 ##=================================================================================##
 ubu16add=./ubu16Additions
+ECHO "Running stage03.sh :: basic install "
 
 RUN_IN_CHROOT $newRoot "apt-get update"
 ## basic tools

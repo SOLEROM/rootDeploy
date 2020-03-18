@@ -9,15 +9,16 @@ newRoot=$1
 
 ##=================================================================================##
 ##=================================================================================##
+ECHO "Running stage02.sh :: basic config "
 ###  ubu1604
 ubu16add=./ubu16Additions
 # enter script
-sudo cp $ubu16add/enter $newRoot/enter
+RUN sudo cp $ubu16add/enter $newRoot/enter
 # apt sources
-sudo cp $newRoot/etc/apt/sources.list  $newRoot/etc/apt/sources.list_ORIG
-sudo cp $ubu16add/etc/apt/sources.list  $newRoot/etc/apt/sources.list
+RUN sudo cp $newRoot/etc/apt/sources.list  $newRoot/etc/apt/sources.list_ORIG
+RUN sudo cp $ubu16add/etc/apt/sources.list  $newRoot/etc/apt/sources.list
 # local scripts
-sudo cp -ar $ubu16add/local  $newRoot/
+RUN sudo cp -ar $ubu16add/local  $newRoot/
 
 ## first enter operations
 # add users:
