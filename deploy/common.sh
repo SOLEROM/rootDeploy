@@ -1,6 +1,8 @@
 ## common bash script help script
 source ./helpMenus.sh
 
+logFile=./lastLog
+
 #######################################################
 #######################################################
 # HANDLE_INPUT_PARAMS for all called scripts
@@ -31,21 +33,27 @@ set -- "${POSITIONAL[@]}" # restore positional parameters
 
 function ECHO {
   cmd=$@
+  echo "==========================================================" >> $logFile
+  echo "=========================================================="
   echo $cmd
-  retVal=$?
-  LOG_WRITE "echo $cmd" "$retVal"
+  echo "$cmd" >> $logFile
+  echo "==========================================================" >> $logFile
+  echo "=========================================================="
 }
 
 function RUN {
+  ##befare of recurssive call
   local cmd=$@
-  LOG_WRITE "$cmd"
   eval $cmd
+  local retCode=$?
+  LOG_WRITE "$cmd" "$retCode"
 }
 
 function LOG_WRITE {
 cmd=$1
-logFile=./lastLog
-echo "$cmd " >> $logFile
+ret=$2
+
+echo "$cmd  ; returnCode=$ret" >> $logFile
 }
 
 function CHECK_INPUT_PARAMS_NUM_ONLY_ONE {

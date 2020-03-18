@@ -6,11 +6,12 @@ source ./common.sh
 CHECK_INPUT_PARAMS_NUM_ONLY_ONE $#
 newRoot=$1
 
+##run host deps install
+./hostDeps.sh
 
 ##=================================================================================##
 ##=================================================================================##
-##run host deps install
-RUN sudo ./hostDeps.sh
+ECHO "Running stage01.sh :: debootstrap "
 ##make sure to have the targer folder
 RUN mkdir -p $newRoot
 ##ubu1604
