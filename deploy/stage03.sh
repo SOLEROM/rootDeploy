@@ -23,5 +23,5 @@ RUN_IN_CHROOT $newRoot "apt-get install -y locales"
 ##RUN_IN_CHROOT $newRoot "dpkg-reconfigure locales"
 
 RUN_IN_CHROOT $newRoot "apt-get install -y  git"
-RUN_IN_CHROOT $newRoot 'git config --global user.name "user"'
-RUN_IN_CHROOT $newRoot 'git config --global user.email "user@user.com"'
+RUN_IN_CHROOT $newRoot "git config --global user.name user"
+RUN_IN_CHROOT $newRoot "git config --global user.email user@user.com"

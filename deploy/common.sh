@@ -77,5 +77,6 @@ function PATCH {
 function RUN_IN_CHROOT {
 newRoot=$1
 cmd=$2
-RUN sudo chroot $newRoot /bin/bash -c "$cmd"
+rootCmd="sudo chroot $newRoot /bin/bash -c \"$cmd\""
+RUN $rootCmd
 }
