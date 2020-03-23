@@ -11,9 +11,11 @@ newRoot=$1
 ECHO "Running androidENV :: install android build tools "
 #deps:
 RUN_IN_CHROOT $newRoot " apt-get install -y git-core gnupg flex bison gperf build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 lib32ncurses5-dev x11proto-core-dev libx11-dev lib32z-dev libgl1-mesa-dev libxml2-utils xsltproc unzip python-mako"
+RUN_IN_CHROOT $newRoot " apt-get install -y gettext"
+RUN_IN_CHROOT $newRoot " apt-get install -y gcc-arm-linux-gnueabihf python-mako"
 ##java
-RUN_IN_CHROOT $newRoot "apt-get install default-jre"
-RUN_IN_CHROOT $newRoot "apt-get install default-jdk"
+RUN_IN_CHROOT $newRoot "apt-get install -y default-jre"
+RUN_IN_CHROOT $newRoot "apt-get install -y default-jdk"
 ##add repo tool
 RUN_IN_CHROOT $newRoot "curl https://storage.googleapis.com/git-repo-downloads/repo > /bin/repo"
 RUN_IN_CHROOT $newRoot "chmod +x /bin/repo"

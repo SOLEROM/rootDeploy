@@ -1,15 +1,51 @@
-
-## rspi
+# buildAndorid
 
 export LANG=C
 export LC_ALL=C
 export LC_COLLATE=C
 
-mkdir /andr/ ; cd /andr/
+## rspi3
+* https://github.com/tab-pi/platform_manifest
+
+mkdir /andrPI/ ; cd /andrPI/
 repo init -u https://github.com/tab-pi/platform_manifest -b nougat
 repo sync
+
+### Build Kernel
+cd kernel/rpi
+ARCH=arm scripts/kconfig/merge_config.sh arch/arm/configs/bcm2709_defconfig android/configs/android-base.cfg android/configs/android-recommended.cfg
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make zImage
+ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- make dtbs
+
+### Build Android source
+
 . build/envsetup.sh
 lunch rpi3-eng
+make ramdisk systemimage
 m 
+
+
+## googlePhone
+
+mkdir /andrGO/ ; cd /andrGO/
+
+* https://source.android.com/setup/start/build-numbers#source-code-tags-and-builds
+repo init -u https://android.googlesource.com/platform/manifest -b android-4.0.1_r1
+repo sync
+
+## complete build for the emulator, with all debugging enabled
+
+. build/envsetup.sh
+lunch aosp_arm-eng
+m
+
+## googlePhone taget
+
+* https://source.android.com/setup/build/running#selecting-device-build
+Pixel 3a 	sargo 	aosp_sargo-userdebug
+
+. build/envsetup.sh
+lunch aosp_sargo-userdebug
+m
 
 
