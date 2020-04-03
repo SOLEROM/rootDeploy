@@ -62,8 +62,17 @@ m
 
 mkdir /andrGO/ ; cd /andrGO/
 
-* https://source.android.com/setup/start/build-numbers#source-code-tags-and-builds
-repo init -u https://android.googlesource.com/platform/manifest -b android-4.0.1_r1
+* XXXX: https://source.android.com/setup/start/build-numbers#source-code-tags-and-builds
+
+```
+			XXXX
+			=================
+OPM7.181205.001 	android-8.1.0_r52 	Oreo 	Nexus 5X, Nexus 6P 	2018-12-05
+
+
+```
+
+repo init -u https://android.googlesource.com/platform/manifest -b XXXX
 repo sync
 
 ## complete build for the emulator, with all debugging enabled
@@ -72,13 +81,19 @@ repo sync
 lunch aosp_arm-eng
 m
 
-## googlePhone taget
+## googlePhone target
 
-* https://source.android.com/setup/build/running#selecting-device-build
+* YYYY: https://source.android.com/setup/build/running#selecting-device-build
+
+```
+			YYYY
+			=====================
 Pixel 3a 	sargo 	aosp_sargo-userdebug
+Nexus 6P 	angler 	aosp_angler-userdebug
 
+```
 . build/envsetup.sh
-lunch aosp_sargo-userdebug
+lunch YYYY
 m
 
 

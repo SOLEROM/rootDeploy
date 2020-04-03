@@ -22,6 +22,8 @@ RUN_IN_CHROOT $newRoot "chmod +x /bin/repo"
 ##config git
 RUN_IN_CHROOT $newRoot git config --global user.name "Your Name"
 RUN_IN_CHROOT $newRoot git config --global user.email "you@example.com"
+##tools:
+RUN_IN_CHROOT $newRoot "apt-get install -y adb"
 #cp buildInst
 RUN_IN_CHROOT $newRoot "mkdir /andr/"
 RUN cp androidBuild.log $newRoot/andr/
