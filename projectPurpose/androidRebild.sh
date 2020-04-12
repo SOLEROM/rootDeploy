@@ -24,6 +24,7 @@ RUN_IN_CHROOT $newRoot git config --global user.name "Your Name"
 RUN_IN_CHROOT $newRoot git config --global user.email "you@example.com"
 ##tools:
 RUN_IN_CHROOT $newRoot "apt-get install -y adb"
+RUN_IN_CHROOT $newRoot "apt-get install -y libssl-dev"
 #cp buildInst
 RUN_IN_CHROOT $newRoot "mkdir /andr/"
 RUN cp androidBuild.log $newRoot/andr/
