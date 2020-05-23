@@ -1,6 +1,6 @@
 #!/bin/bash
 helpFunc=HELP_PRINT_STAGE01
-source ./common.sh
+source ../stagesBuild/common.sh
 CHECK_NEWROOT_SET   
 CHECK_VERSION_SET
 
