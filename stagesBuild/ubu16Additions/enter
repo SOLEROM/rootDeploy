@@ -83,6 +83,7 @@ cp /etc/hosts $newRoot/etc/hosts
 mount -t proc /proc $newRoot/proc/
 mount -t sysfs /sys $newRoot/sys/
 mount -o bind /dev  $newRoot/dev/
+mount -o bind /dev/pts  $newRoot/dev/pts/
 
 #for X usage (clients can connect from any host)
 xhost +
@@ -107,4 +108,5 @@ fi
 echo "host exit $newRoot env"
 umount $newRoot/proc/
 umount $newRoot/sys/
+umount $newRoot/dev/pts
 umount $newRoot/dev/
