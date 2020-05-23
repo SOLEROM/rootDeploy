@@ -1,0 +1,9 @@
+--- root/.bashrc_orig	2020-03-14 13:42:35.431514740 +0200
++++ root/.bashrc	2020-03-14 13:42:58.756298837 +0200
+@@ -97,3 +97,6 @@
+ #if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
+ #    . /etc/bash_completion
+ #fi
++
++
++source /local/bashrc.sh

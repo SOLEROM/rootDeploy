@@ -1,10 +1,10 @@
 #!/bin/bash
 ##set help function and call common to handle input params
 helpFunc=HELP_PRINT_ProjAndroid
-source ../deploy/common.sh
-##check inputs:
-CHECK_INPUT_PARAMS_NUM_ONLY_ONE $#
-newRoot=$1
+
+## build dep
+../deploy/deploy_basic_x_dev.sh
+../stagesBuild/stage_newerPython.sh
 
 ##=================================================================================##
 ##=================================================================================##

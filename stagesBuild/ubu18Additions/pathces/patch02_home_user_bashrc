@@ -1,0 +1,9 @@
+--- /home/user/.bashrc.orig	2020-05-23 10:34:27.153902911 +0000
++++ /home/user/.bashrc	2020-05-23 10:50:54.130081513 +0000
+@@ -115,3 +115,6 @@
+     . /etc/bash_completion
+   fi
+ fi
++
++
++source /local/bashrc.sh

@@ -3,12 +3,12 @@
 helpFunc=HELP_PRINT_xEnable
 source ./common.sh
 ##check inputs:
-CHECK_INPUT_PARAMS_NUM_ONLY_ONE $#
-newRoot=$1
+CHECK_NEWROOT_SET
+CHECK_VERSION_SET
+
 
 ##=================================================================================##
 ##=================================================================================##
-ubu16add=./ubu16Additions
 ECHO "Running stage_xEN :: install x support tools "
 
 ##fix:Gtk-Message: Failed to load module "canberra-gtk-module"

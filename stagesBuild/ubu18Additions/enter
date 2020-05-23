@@ -1,0 +1,110 @@
+#!/bin/bash
+
+#defaults vars
+inMode="user"
+
+
+# help
+function HELP_PRINT {
+echo "==================================================="
+echo "Enter to chroot env help print:"
+echo "Usage:"
+echo "./enter -h|-help|--help		Show this menu"
+echo "./enter <Flags> <rootENVfolder>	Enter to root env"
+echo "Flags:"
+echo "noFlags				enter as user"
+echo "-r|-root|--root			enter as root"
+echo "-u|-user|--user			enter as user"
+echo "-l|-login|--login			enter with login promt"
+
+echo "==================================================="
+exit 1
+}
+
+
+
+
+# input flags
+POSITIONAL=()
+while [[ $# -gt 0 ]]
+do
+key="$1"
+case $key in
+    -h|-help|--help) 	
+	HELP_PRINT
+	shift # past argument
+	;;
+    -r|-root|--root)                  
+        inMode="root"
+        shift # past argument
+        ;;	 
+    -u|-user|--user)                  
+        inMode="user"
+        shift # past argument
+        ;;
+    -l|-login|--login)                  
+        inMode="login"
+        shift # past argument
+        ;;
+    *)  		
+	POSITIONAL+=("$1") # save it in an array for later
+   	shift # past argument
+    	;;
+     
+esac
+done
+set -- "${POSITIONAL[@]}" # restore positional parameters
+
+
+################################################################
+
+
+# check root
+if [[ $EUID -ne 0 ]]; then
+   echo "This script must be run as root" 
+   exit 1
+fi
+
+# check input
+if [ "$#" -ne 1 ]; then
+    echo "Illegal number of parameters"
+    exit 1
+fi
+newRoot=$1
+
+################################################################
+############### make the magic  ################################
+################################################################
+# cp to newroot
+cp /etc/resolv.conf $newRoot/etc/resolv.conf
+cp /etc/hosts $newRoot/etc/hosts
+
+# mount pseudo filesystems
+mount -t proc /proc $newRoot/proc/
+mount -t sysfs /sys $newRoot/sys/
+mount -o bind /dev  $newRoot/dev/
+
+#for X usage (clients can connect from any host)
+xhost +
+
+# enter:
+if [ $inMode == "root" ]; then
+## as root
+chroot $newRoot su - root
+fi
+
+if [ $inMode == "user" ]; then
+##as user
+chroot $newRoot su - user
+fi
+
+if [ $inMode == "login" ]; then
+#with login promt
+chroot $newRoot /bin/login
+fi
+
+# exit:
+echo "host exit $newRoot env"
+umount $newRoot/proc/
+umount $newRoot/sys/
+umount $newRoot/dev/

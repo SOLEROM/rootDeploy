@@ -1,0 +1,9 @@
+--- /etc/profile.orig	2020-05-23 10:34:27.137902792 +0000
++++ /etc/profile	2020-05-23 10:48:25.368834318 +0000
+@@ -25,3 +25,5 @@
+   done
+   unset i
+ fi
++
++source /local/init.sh
+

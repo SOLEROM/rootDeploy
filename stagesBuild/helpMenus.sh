@@ -16,7 +16,7 @@ echo "Usage:"
 echo "./stage01.sh  -h|-help|--help             Show this menu"
 echo "./stage01.sh  -o|-options|--options       Show rootFS build options"
 echo "Run:"
-echo "./stage01.sh  <newFolderPath for newRootfs> "
+echo "./stage01.sh -r <newFolderPath for newRootfs> -v 16/18"
 echo "==================================================="
 exit 1
 }
@@ -27,7 +27,7 @@ echo "stage02.sh Help Menu:"
 echo "Usage:"
 echo "./stage02.sh  -h|-help|--help     	Show this menu"
 echo "Run:"
-echo "./stage02.sh  <newFolderPath for newRootfs> "
+echo "./stage02.sh -r <newFolderPath for newRootfs> -v 16/18 "
 echo "==================================================="
 exit 1
 }
@@ -38,7 +38,7 @@ echo "stage03.sh Help Menu:"
 echo "Usage:"
 echo "./stage03.sh  -h|-help|--help             Show this menu"
 echo "Run:"
-echo "./stage03.sh  <newFolderPath for newRootfs> "
+echo "./stage03.sh -r <newFolderPath for newRootfs> -v 16/18 "
 echo "==================================================="
 exit 1
 }
@@ -50,7 +50,7 @@ echo "stage04.sh Help Menu:"
 echo "Usage:"
 echo "./stage04.sh  -h|-help|--help             Show this menu"
 echo "Run:"
-echo "./stage04.sh  <newFolderPath for newRootfs> "
+echo "./stage04.sh  -r <newFolderPath for newRootfs> -v 16/18 "
 echo "==================================================="
 exit 1
 }
@@ -65,7 +65,7 @@ echo "stage_xEnable.sh will make the rootfs abale to run X Gui staff"
 echo "Flags:"
 echo "./stage_xEnable.sh -h|-help|--help             Show this menu"
 echo "Usage:"
-echo "stage_xEnable.sh  <FolderPath for newRootfs> "
+echo "stage_xEnable.sh  -r <newFolderPath for newRootfs> -v 16/18 "
 echo "==================================================="
 exit 1
 }
