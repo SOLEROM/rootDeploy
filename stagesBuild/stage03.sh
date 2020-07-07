@@ -28,3 +28,5 @@ RUN_IN_CHROOT $newRoot "update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8 LANGUA
 RUN_IN_CHROOT $newRoot "apt-get install -y  git"
 RUN_IN_CHROOT $newRoot "HOME=/home/user  git config --global user.name user"
 RUN_IN_CHROOT $newRoot "HOME=/home/user  git config --global user.email user@user.com"
+
+RUN_IN_CHROOT $newRoot "mkdir /proj"

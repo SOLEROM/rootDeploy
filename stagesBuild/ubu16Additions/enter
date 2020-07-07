@@ -16,6 +16,7 @@ echo "noFlags				enter as user"
 echo "-r|-root|--root			enter as root"
 echo "-u|-user|--user			enter as user"
 echo "-l|-login|--login			enter with login promt"
+echo "-p|-proj|--project <folder>	add project mount to /proj"
 
 echo "==================================================="
 exit 1
@@ -42,6 +43,11 @@ case $key in
         inMode="user"
         shift # past argument
         ;;
+    -p|-proj|--project)
+        proj=$2
+        shift # past argument
+        shift # past argument
+	;;
     -l|-login|--login)                  
         inMode="login"
         shift # past argument
@@ -85,6 +91,13 @@ mount -t sysfs /sys $newRoot/sys/
 mount -o bind /dev  $newRoot/dev/
 mount -o bind /dev/pts  $newRoot/dev/pts/
 
+if [ ! -z "$newRoot" ] ; then
+echo "mounting the $proj folder to inner /proj"
+mount -o bind $proj $newRoot/proj
+fi
+
+
+
 #for X usage (clients can connect from any host)
 xhost +
 
@@ -106,6 +119,9 @@ fi
 
 # exit:
 echo "host exit $newRoot env"
+if [ ! -z "$newRoot" ] ; then
+umount $newRoot/proj
+fi
 umount $newRoot/proc/
 umount $newRoot/sys/
 umount $newRoot/dev/pts
