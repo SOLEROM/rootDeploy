@@ -13,7 +13,7 @@ ECHO "Running stage03.sh :: basic install "
 
 RUN_IN_CHROOT $newRoot "apt-get update"
 ## basic tools
-RUN_IN_CHROOT $newRoot "apt-get install -y vim wget curl bc"
+RUN_IN_CHROOT $newRoot "apt-get install -y vim wget curl bc tree"
 ## ubuntu basic
 RUN_IN_CHROOT $newRoot "apt-get install -y software-properties-common"
 
