@@ -23,6 +23,7 @@ CHECK_NEWROOT_SET
 ECHO "Running kernel-defi-build:: install deps "
 #deps:
 RUN_IN_CHROOT $newRoot "ls"
+
 ##=================================================================================##
 }
 
