@@ -1,0 +1,29 @@
+# Use a base image
+FROM ubuntu:20.04 AS common-base
+
+# Install basic dependencies (modify as needed)
+RUN apt-get update && apt-get install -y \
+    sudo \
+    docker.io \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a user with no password sudo
+RUN mkdir -p /etc/sudoers.d && \
+    useradd -m user -s /bin/bash && \
+    echo "user:user" | chpasswd && \
+    echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
+
+# Ensure the shared directory exists
+RUN mkdir -p /home/user/shared && \
+    chown -R user:user /home/user/shared
+
+# Copy and setup the save_changes script
+COPY save_changes.sh /usr/local/bin/save_changes
+RUN chmod +x /usr/local/bin/save_changes
+
+USER user
+WORKDIR /home/user
+
+# Set the default shell to bash
+CMD ["/bin/bash"]

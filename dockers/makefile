@@ -5,47 +5,8 @@ TAR_FILE=my_docker_env.tar
 TAR_PATH := $(shell pwd)
 IMAGE_NAME=my_docker_image:latest
 CONTAINER_NAME=my_docker_container
-
-###################################################################################
-#############################  docker file build ##################################
-###################################################################################
-define DOCKERFILE_CONTENT
-# Use a base image
-FROM ubuntu:20.04
-
-# Install basic dependencies (modify as needed)
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
-    git \
-    vim \
-    python3 \
-    python3-pip \
-    sudo \
-    docker.io \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Set up a user with no password sudo
-RUN useradd -m user -s /bin/bash && \
-    echo "user:user" | chpasswd && \
-    echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
-
-# Ensure the shared directory exists
-RUN mkdir -p /home/user/shared && \
-    chown -R user:user /home/user/shared
-
-# Copy and setup the save_changes script
-COPY save_changes.sh /usr/local/bin/save_changes
-RUN chmod +x /usr/local/bin/save_changes
-
-USER user
-WORKDIR /home/user
-
-# Set the default shell to bash
-CMD ["/bin/bash"]
-endef
-export DOCKERFILE_CONTENT
+DOCKERFILE_COMMON=Dockerfile.common
+DOCKERFILE_PATH=./Dockerfile # Specify the path to your external Dockerfile
 
 ###################################################################################
 ############################# save docker script ##################################
@@ -65,15 +26,15 @@ export SAVE_CHANGES_SCRIPT
 .PHONY: all build run run-gpu save clean help
 help:
 	@echo "Usage:"
-	@echo "  make [target] [VOLUME_PATH=]"
+	@echo "  make [target] [VOLUME_PATH=] [DOCKERFILE_PATH=]"
 	@echo ""
 	@echo "Targets:"
-	@echo "  help     - Display this help message (default target)."
-	@echo "  build    - Build the Docker image and save it to a tar file."
-	@echo "  run      - Run the Docker container with GUI support but no GPU. Optionally specify VOLUME_PATH."
-	@echo "  run-gpu  - Run the Docker container with GUI and GPU support. Optionally specify VOLUME_PATH."
-	@echo "  save     - Save changes made in the container back to the Docker image and tar file."
-	@echo "  clean    - Clean up the Docker environment by removing the container, image, and tar file."
+	@echo "  help       - Display this help message (default target)."
+	@echo "  build      - Build the Docker image and save it to a tar file."
+	@echo "  run        - Run the Docker container with GUI support but no GPU. Optionally specify VOLUME_PATH."
+	@echo "  run-gpu    - Run the Docker container with GUI and GPU support. Optionally specify VOLUME_PATH."
+	@echo "  save       - Save changes made in the container back to the Docker image and tar file."
+	@echo "  clean      - Clean up the Docker environment by removing the container, image, and tar file."
 
 all: help
 
@@ -81,11 +42,24 @@ all: help
 ###################################  build ########################################
 ###################################################################################
 build: setup_scripts
-	@echo "Building Docker image: $(IMAGE_NAME)"
-	@echo "$$DOCKERFILE_CONTENT" | docker build -t $(IMAGE_NAME) -f- .
+	@echo "Building Docker image: $(IMAGE_NAME) with Dockerfile: $(DOCKERFILE_PATH)"
+	@docker build -t common-base -f $(DOCKERFILE_COMMON) .
+	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE_PATH) .
 	@echo "Saving Docker image to tar file: $(TAR_FILE)"
 	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
 	@rm save_changes.sh
+
+
+load:
+	@echo "Loading Docker image from tar file: $(TAR_FILE)"
+	@if [ -f $(TAR_FILE) ]; then \
+		docker load -i $(TAR_FILE); \
+		echo "Docker image $(IMAGE_NAME) loaded successfully."; \
+	else \
+		echo "Error: Tar file $(TAR_FILE) not found."; \
+		exit 1; \
+	fi
+
 
 setup_scripts:
 	@echo "$$SAVE_CHANGES_SCRIPT" > save_changes.sh
@@ -93,16 +67,39 @@ setup_scripts:
 ###################################################################################
 ###################################  run ##########################################
 ###################################################################################
+connect:
+	@if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
+		docker exec -it $(CONTAINER_NAME) /bin/bash; \
+	else \
+		echo "Container $(CONTAINER_NAME) is not running."; \
+	fi
+
 run:
-	@echo "Running Docker container with GUI support: $(CONTAINER_NAME)"
-	docker run --name $(CONTAINER_NAME) --rm -it \
-		--user $(shell id -u):$(shell id -g) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v /tmp/.X11-unix:/tmp/.X11-unix \
-		-v $(TAR_PATH):/save/ \
-		-e DISPLAY=$(DISPLAY) \
-		$(if $(VOLUME_PATH),-v $(VOLUME_PATH):/home/user/shared:rw) \
-		$(IMAGE_NAME)
+	@if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
+		$(MAKE) connect; \
+	else \
+		echo "Running Docker container with GUI support: $(CONTAINER_NAME)"; \
+		docker run --name $(CONTAINER_NAME) --rm -d \
+			--user $(shell id -u):$(shell id -g) \
+			-v /var/run/docker.sock:/var/run/docker.sock \
+			-v /tmp/.X11-unix:/tmp/.X11-unix \
+			-v $(TAR_PATH):/save/ \
+			-e DISPLAY=$(DISPLAY) \
+			$(if $(VOLUME_PATH),-v $(VOLUME_PATH):/home/user/shared:rw) \
+			$(IMAGE_NAME) sleep infinity; \
+		$(MAKE) connect; \
+	fi
+
+stop:
+	@if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
+		echo "Stopping Docker container: $(CONTAINER_NAME)"; \
+		docker stop $(CONTAINER_NAME); \
+		exit 0; \
+	fi
+	@echo "Container $(CONTAINER_NAME) is not running."
+
+
+
 
 run-gpu:
 	@echo "Running Docker container with GUI and GPU support: $(CONTAINER_NAME)"
@@ -133,6 +130,4 @@ clean:
 	@echo "Cleaning up Docker environment..."
 	@docker rm -f $(CONTAINER_NAME) || true
 	@docker rmi $(IMAGE_NAME) || true
-	@rm -f $(TAR_FILE)
 	@echo "Cleanup complete."
-
