@@ -1,10 +1,16 @@
 # Use a base image
 FROM ubuntu:20.04 AS common-base
 
+# Set environment variables to avoid timezone prompt
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV TZ=Etc/UTC
+
 # Install basic dependencies (modify as needed)
 RUN apt-get update && apt-get install -y \
     sudo \
     docker.io \
+    software-properties-common \
+    tzdata \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -24,6 +30,9 @@ RUN chmod +x /usr/local/bin/save_changes
 
 USER user
 WORKDIR /home/user
+
+# Add .local/bin to PATH for user-specific scripts
+ENV PATH="/home/user/.local/bin:${PATH}"
 
 # Set the default shell to bash
 CMD ["/bin/bash"]
