@@ -1,0 +1,74 @@
+# Use a base image
+FROM ubuntu:20.04 AS my-base-image
+
+
+
+
+
+FROM my-base-image:latest AS python-3.8
+RUN sudo apt-get update && sudo apt-get install -y python3.8 python3.8-venv python3.8-dev \
+    && sudo ln -s /usr/bin/python3.8 /usr/local/bin/python \
+    && sudo ln -s /usr/bin/pip3 /usr/local/bin/pip
+
+FROM my-base-image:latest AS python-3.9
+RUN sudo apt-get update && sudo apt-get install -y python3.9 python3.9-venv python3.9-dev \
+    && sudo ln -s /usr/bin/python3.9 /usr/local/bin/python \
+    && sudo ln -s /usr/bin/pip3 /usr/local/bin/pip
+
+FROM my-base-image:latest AS gcc-9
+RUN sudo apt-get update && sudo apt-get install -y gcc-9 g++-9 \
+    && sudo ln -s /usr/bin/gcc-9 /usr/local/bin/gcc \
+    && sudo ln -s /usr/bin/g++-9 /usr/local/bin/g++
+
+FROM my-base-image:latest AS gcc-10
+RUN sudo apt-get update && sudo apt-get install -y gcc-10 g++-10 \
+    && sudo ln -s /usr/bin/gcc-10 /usr/local/bin/gcc \
+    && sudo ln -s /usr/bin/g++-10 /usr/local/bin/g++
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Set environment variables to avoid timezone prompt
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV TZ=Etc/UTC
+
+# Install basic dependencies (modify as needed)
+RUN apt-get update && apt-get install -y \
+    sudo \
+    docker.io \
+    software-properties-common \
+    tzdata \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a user with no password sudo
+RUN mkdir -p /etc/sudoers.d && \
+    useradd -m user -s /bin/bash && \
+    echo "user:user" | chpasswd && \
+    echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
+
+# Ensure the shared directory exists
+RUN mkdir -p /home/user/shared && \
+    chown -R user:user /home/user/shared
+
+
+USER user
+WORKDIR /home/user
+
+# Add .local/bin to PATH for user-specific scripts
+ENV PATH="/home/user/.local/bin:${PATH}"
+
+# Set the default shell to bash
+CMD ["/bin/bash"]
