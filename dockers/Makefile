@@ -1,6 +1,5 @@
 # deps :
 ##	sudo apt install docker-buildx
-
 ###################################################################################
 ################################  params  #########################################
 ###################################################################################
@@ -9,8 +8,6 @@ TAR_PATH := $(shell pwd)
 IMAGE_NAME=my_docker_image:latest
 CONTAINER_NAME=my_docker_container
 DOCKERFILE ?= Dockerfile
-
-
 ###################################################################################
 ############################# save docker script ##################################
 ###################################################################################
@@ -22,7 +19,6 @@ docker commit $$(hostname) $(IMAGE_NAME)
 docker save -o /save/$(TAR_FILE) $(IMAGE_NAME)
 endef
 export SAVE_CHANGES_SCRIPT
-
 ###################################################################################
 ###################################  help #########################################
 ###################################################################################
@@ -42,7 +38,6 @@ help:
 	@echo "  clean      - Clean up the Docker environment by removing the container, image, and tar file."
 
 all: help
-
 ###################################################################################
 ############################### Dockerfile DEFAULT (ubu22) ########################
 ###################################################################################
@@ -101,13 +96,30 @@ export DOCKERFILE_CONTENT
 ###################################################################################
 ###################################  build ########################################
 ###################################################################################
-build: setup_scripts setup_dockerfile
+build_internal: setup_scripts setup_dockerfile
 	@echo "Building Docker image: $(IMAGE_NAME)"
 	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
 	@echo "Saving Docker image to tar file: $(TAR_FILE)"
 	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
 	@rm save_changes.sh $(DOCKERFILE)
 
+build_external: 
+	@echo "Building Docker image (external Dockerfile: $(DOCKERFILE))"
+	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
+	@echo "Saving Docker image to tar file: $(TAR_FILE)"
+	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
+	@rm save_changes.sh $(DOCKERFILE)
+
+build:
+	@if [ "$(origin DOCKERFILE)" = "command line" ]; then \
+		$(MAKE) build_external; \
+	else \
+		$(MAKE) build_internal; \
+	fi
+
+###################################################################################
+###################################  load  ########################################
+###################################################################################
 load:
 	@echo "Loading Docker image from tar file: $(TAR_FILE)"
 	@if [ -f $(TAR_FILE) ]; then \
@@ -174,7 +186,6 @@ run-gpu:
 ###################################################################################
 ###################################  save  ########################################
 ###################################################################################
-
 save:
 	@echo "Saving container changes to new image..."
 	@docker commit $(CONTAINER_NAME) $(IMAGE_NAME)
