@@ -22,7 +22,7 @@ export SAVE_CHANGES_SCRIPT
 ###################################################################################
 ###################################  help #########################################
 ###################################################################################
-.PHONY: all build run run-gpu save clean help
+.PHONY: all help build load run run-gpu save clean fullclean
 help:
 	@echo "Usage:"
 	@echo "  make [target] [SHARE=]"
@@ -41,7 +41,6 @@ all: help
 ###################################################################################
 ############################### Dockerfile DEFAULT (ubu22) ########################
 ###################################################################################
-DOCKERFILE := Dockerfile
 define DOCKERFILE_CONTENT
 # Use a base image
 FROM ubuntu:22.04 AS common-base
@@ -70,10 +69,6 @@ RUN mkdir -p /etc/sudoers.d && \
 RUN mkdir -p /home/user/shared && \
     chown -R user:user /home/user/shared
 
-# Copy and setup the save_changes script
-COPY save_changes.sh /usr/local/bin/save_changes
-RUN chmod +x /usr/local/bin/save_changes
-
 USER user
 WORKDIR /home/user
 
@@ -96,19 +91,23 @@ export DOCKERFILE_CONTENT
 ###################################################################################
 ###################################  build ########################################
 ###################################################################################
-build_internal: setup_scripts setup_dockerfile
-	@echo "Building Docker image: $(IMAGE_NAME)"
-	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
+build_internal: setup_internal_dockerfile
+	@echo "Combining internal Dockerfile with injected logic"
+	@cat $(DOCKERFILE) Dockerfile.inject > Dockerfile.final
+	@echo "Building final image from combined Dockerfile"
+	@docker build -t $(IMAGE_NAME) -f Dockerfile.final .
 	@echo "Saving Docker image to tar file: $(TAR_FILE)"
 	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
-	@rm save_changes.sh $(DOCKERFILE)
+	@rm -f save_changes.sh Dockerfile.inject Dockerfile.final
 
-build_external: 
-	@echo "Building Docker image (external Dockerfile: $(DOCKERFILE))"
-	@docker build -t $(IMAGE_NAME) -f $(DOCKERFILE) .
+build_external: setup_final_dockerfile
+	@echo "Combining external Dockerfile ($(DOCKERFILE)) with injected logic"
+	@cat $(DOCKERFILE) Dockerfile.inject > Dockerfile.final
+	@echo "Building final image from combined Dockerfile"
+	@docker build -t $(IMAGE_NAME) -f Dockerfile.final .
 	@echo "Saving Docker image to tar file: $(TAR_FILE)"
 	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
-	@rm save_changes.sh $(DOCKERFILE)
+	@rm -f save_changes.sh Dockerfile.inject Dockerfile.final
 
 build:
 	@if [ "$(origin DOCKERFILE)" = "command line" ]; then \
@@ -116,6 +115,19 @@ build:
 	else \
 		$(MAKE) build_internal; \
 	fi
+
+setup_internal_dockerfile:
+	@echo "$$DOCKERFILE_CONTENT" > $(DOCKERFILE)
+	$(MAKE) append_common_docker_logic
+
+append_common_docker_logic:
+	@echo "$$SAVE_CHANGES_SCRIPT" > save_changes.sh
+	@echo "Generating injected Dockerfile prefix for save_changes"
+	@cat > Dockerfile.inject <<EOF
+	# Injected layer for save_changes
+	COPY save_changes.sh /usr/local/bin/save_changes
+	RUN chmod +x /usr/local/bin/save_changes
+	EOF
 
 ###################################################################################
 ###################################  load  ########################################
@@ -129,12 +141,6 @@ load:
 		echo "Error: Tar file $(TAR_FILE) not found."; \
 		exit 1; \
 	fi
-
-setup_scripts:
-	@echo "$$SAVE_CHANGES_SCRIPT" > save_changes.sh
-
-setup_dockerfile:
-	@echo "$$DOCKERFILE_CONTENT" > $(DOCKERFILE)
 
 ###################################################################################
 ###################################  run ##########################################

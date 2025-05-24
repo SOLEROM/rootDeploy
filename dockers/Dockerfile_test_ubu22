@@ -1,0 +1,42 @@
+FROM ubuntu:22.04 AS common-base
+
+# Set environment variables to avoid timezone prompt
+ENV DEBIAN_FRONTEND=noninteractive 
+ENV TZ=Etc/UTC
+
+# Install basic dependencies
+RUN apt-get update && apt-get install -y \
+    sudo \
+    docker.io \
+    software-properties-common \
+    tzdata \
+    iputils-ping \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set up a user with no password sudo
+RUN mkdir -p /etc/sudoers.d && \
+    useradd -m user -s /bin/bash && \
+    echo "user:user" | chpasswd && \
+    echo "user ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/user
+
+# Ensure the shared directory exists
+RUN mkdir -p /home/user/shared && \
+    chown -R user:user /home/user/shared
+
+USER user
+WORKDIR /home/user
+
+# Add .local/bin to PATH for user-specific scripts
+ENV PATH="/home/user/.local/bin:${PATH}"
+
+# Set the default shell to bash
+CMD ["/bin/bash"]
+
+# Extend the common-base to install additional packages
+FROM common-base AS final
+
+RUN sudo apt-get update && sudo apt-get install -y \
+    vim \
+    && sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*

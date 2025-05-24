@@ -1,11 +1,10 @@
-# Use a base image
 FROM ubuntu:20.04 AS common-base
 
 # Set environment variables to avoid timezone prompt
 ENV DEBIAN_FRONTEND=noninteractive 
 ENV TZ=Etc/UTC
 
-# Install basic dependencies (modify as needed)
+# Install basic dependencies
 RUN apt-get update && apt-get install -y \
     sudo \
     docker.io \
@@ -25,10 +24,6 @@ RUN mkdir -p /etc/sudoers.d && \
 RUN mkdir -p /home/user/shared && \
     chown -R user:user /home/user/shared
 
-# Copy and setup the save_changes script
-COPY save_changes.sh /usr/local/bin/save_changes
-RUN chmod +x /usr/local/bin/save_changes
-
 USER user
 WORKDIR /home/user
 
@@ -37,3 +32,11 @@ ENV PATH="/home/user/.local/bin:${PATH}"
 
 # Set the default shell to bash
 CMD ["/bin/bash"]
+
+# Extend the common-base to install additional packages
+FROM common-base AS final
+
+RUN sudo apt-get update && sudo apt-get install -y \
+    vim \
+    && sudo apt-get clean \
+    && sudo rm -rf /var/lib/apt/lists/*
