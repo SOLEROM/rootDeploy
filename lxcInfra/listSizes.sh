@@ -2,6 +2,7 @@
 
 # Path to the LXD storage pool
 STORAGE_PATH="/var/snap/lxd/common/lxd/storage-pools/default/containers/"
+STORAGE_PATH="/data/lxcPOOL/containers/"
 
 # Check if the storage path exists
 if [ ! -d "$STORAGE_PATH" ]; then

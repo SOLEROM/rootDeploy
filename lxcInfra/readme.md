@@ -2,6 +2,10 @@
 
 sudo snap install lxd
 
+```
+/snap/bin/lxd	- Daemon / Background service
+/snap/bin/lxc   - Client CLI / User-facing tool
+```
 
 ## list
 lxc storage list
@@ -24,6 +28,10 @@ lxc launch ubuntu:20.04 test0 --config=user.user-data="$(cat cloud-init.yaml)"
 ## run
 sudo lxc exec test0 -- /bin/bash
 
+* as non root:
+    lxc exec <container-name> -- su - <username>
+
+    
 ## clean
 sudo lxc stop test0
 sudo lxc delete test0
