@@ -88,6 +88,15 @@ RUN sudo apt-get update && sudo apt-get install -y \
 endef
 export DOCKERFILE_CONTENT
 
+
+define DOCKERFILE_APPEND
+## common logic to append to Dockerfile
+COPY save_changes.sh /usr/local/bin/save_changes
+RUN sudo chmod +x /usr/local/bin/save_changes
+endef
+export DOCKERFILE_APPEND
+
+
 ###################################################################################
 ###################################  build ########################################
 ###################################################################################
@@ -100,7 +109,7 @@ build_internal: setup_internal_dockerfile
 	@docker save -o $(TAR_FILE) $(IMAGE_NAME)
 	@rm -f save_changes.sh Dockerfile.inject Dockerfile.final
 
-build_external: setup_final_dockerfile
+build_external: append_common_docker_logic
 	@echo "Combining external Dockerfile ($(DOCKERFILE)) with injected logic"
 	@cat $(DOCKERFILE) Dockerfile.inject > Dockerfile.final
 	@echo "Building final image from combined Dockerfile"
@@ -122,12 +131,7 @@ setup_internal_dockerfile:
 
 append_common_docker_logic:
 	@echo "$$SAVE_CHANGES_SCRIPT" > save_changes.sh
-	@echo "Generating injected Dockerfile prefix for save_changes"
-	@cat > Dockerfile.inject <<EOF
-	# Injected layer for save_changes
-	COPY save_changes.sh /usr/local/bin/save_changes
-	RUN chmod +x /usr/local/bin/save_changes
-	EOF
+	@echo "$$DOCKERFILE_APPEND" > Dockerfile.inject 
 
 ###################################################################################
 ###################################  load  ########################################
