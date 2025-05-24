@@ -30,7 +30,7 @@ help:
 	@echo "Targets:"
 	@echo "  help       - Display this help message (default target)."
 	@echo "  build      - Build the Docker image and save tar file // default Dockerfile is ubu22."
-	@echo "  build DOCKERFILE=<XXX>  - Build image and save tar with input Dockerfile. 
+	@echo "  build DOCKERFILE=<XXX>  - Build image and save tar with input Dockerfile."
 	@echo "  run        - Run the Docker container with GUI support but no GPU. Optionally specify SHARE."
 	@echo "  run-gpu    - Run the Docker container with GUI and GPU support. Optionally specify SHARE."
 	@echo "  save       - Save changes made in the container back to the Docker image and tar file."
