@@ -91,8 +91,22 @@ export DOCKERFILE_CONTENT
 
 define DOCKERFILE_APPEND
 ## common logic to append to Dockerfile
+USER root
+RUN mkdir -p /local 
 COPY save_changes.sh /usr/local/bin/save_changes
-RUN sudo chmod +x /usr/local/bin/save_changes
+RUN  chmod +x /usr/local/bin/save_changes
+## global aliases
+RUN echo "alias c='clear'" | tee -a /etc/bash.bashrc
+RUN echo "alias tit='source /local/tit.sh $$1'" | tee -a /etc/bash.bashrc
+RUN echo "tit $(CONTAINER_NAME)" | tee -a /home/user/.bashrc
+## tit
+RUN cat > /local/tit.sh <<'EOSCRIPT'
+#!/usr/bin/env bash
+tit=$$1
+PS1="\[\e]0;$$tit\a\]${debian_chroot:+($$debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$$ "
+EOSCRIPT
+RUN chmod +x /local/tit.sh
+
 endef
 export DOCKERFILE_APPEND
 
@@ -162,7 +176,7 @@ run:
 		$(MAKE) connect; \
 	else \
 		echo "Running Docker container with GUI support: $(CONTAINER_NAME)"; \
-		docker run --privileged --name $(CONTAINER_NAME) --rm -d \
+		docker run --privileged --name $(CONTAINER_NAME) --hostname $(CONTAINER_NAME) --rm -d \
 			--user $(shell id -u):$(shell id -g) \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			-v /tmp/.X11-unix:/tmp/.X11-unix \
