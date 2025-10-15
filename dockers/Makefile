@@ -1,5 +1,7 @@
-# deps :
-##	sudo apt install docker-buildx
+## deps :
+##		sudo apt install docker-buildx
+## notes:
+##		group 44 is : > getent group video // video group for /dev/dri access;
 ###################################################################################
 ################################  params  #########################################
 ###################################################################################
@@ -32,7 +34,7 @@ help:
 	@echo "  build      - Build the Docker image and save tar file // default Dockerfile is ubu22."
 	@echo "  build DOCKERFILE=<XXX>  - Build image and save tar with input Dockerfile."
 	@echo "  run        - Run the Docker container with GUI support but no GPU. Optionally specify SHARE."
-	@echo "  run-gpu    - Run the Docker container with GUI and GPU support. Optionally specify SHARE."
+	@echo "  run-gpu    - Same as 'run' but adds --gpus all."
 	@echo "  save       - Save changes made in the container back to the Docker image and tar file."
 	@echo "  load       - Load Docker image."
 	@echo "  clean      - Clean up the Docker environment by removing the container, image, and tar file."
@@ -150,6 +152,23 @@ append_common_docker_logic:
 ###################################################################################
 ###################################  load  ########################################
 ###################################################################################
+
+# ---- X11 forwarding support ----
+XAUTH_FILE ?= /tmp/hailo_docker.xauth
+XAUTH_IN_CONTAINER ?= /home/user/.Xauthority
+
+
+.PHONY: xauth
+xauth:
+	@test -n "$(DISPLAY)" || { echo "ERROR: DISPLAY is empty (no X11 forwarding)."; exit 1; }
+	@command -v xauth >/dev/null || { echo "ERROR: xauth not installed on host."; exit 1; }
+	@touch "$(XAUTH_FILE)"
+	@xauth nlist "$(DISPLAY)" | sed 's/^..../ffff/' | xauth -f "$(XAUTH_FILE)" nmerge - >/dev/null
+	@chmod 644 "$(XAUTH_FILE)"
+	@echo "XAUTH ready at $(XAUTH_FILE) for DISPLAY=$(DISPLAY)"
+
+
+
 load:
 	@echo "Loading Docker image from tar file: $(TAR_FILE)"
 	@if [ -f $(TAR_FILE) ]; then \
@@ -170,22 +189,33 @@ connect:
 		echo "Container $(CONTAINER_NAME) is not running."; \
 	fi
 
-run:
+run: xauth
 	@if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
 		echo "Docker container is already running ; connect to $(CONTAINER_NAME)"; \
 		$(MAKE) connect; \
 	else \
 		echo "Running Docker container with GUI support: $(CONTAINER_NAME)"; \
 		docker run --privileged --name $(CONTAINER_NAME) --hostname $(CONTAINER_NAME) --rm -d \
+			--net=host \
+			--ipc=host \
 			--user $(shell id -u):$(shell id -g) \
+			--device /dev/dri:/dev/dri \
+			--group-add 44 \
 			-v /var/run/docker.sock:/var/run/docker.sock \
 			-v /tmp/.X11-unix:/tmp/.X11-unix \
 			-v $(TAR_PATH):/save/ \
-			-e DISPLAY=$(DISPLAY) \
+			-v $(XAUTH_FILE):$(XAUTH_IN_CONTAINER):ro \
+			-v /dev:/dev \
+			-v /lib/firmware:/lib/firmware \
+			-e DISPLAY="$(DISPLAY)" \
+			-e XDG_RUNTIME_DIR="$(XDG_RUNTIME_DIR)" \
+			-e XAUTHORITY=$(XAUTH_IN_CONTAINER) \
 			$(if $(SHARE),-v $(SHARE):/home/user/shared:rw) \
+			$(EXTRA_DOCKER_ARGS) \
 			$(IMAGE_NAME) sleep infinity; \
 		$(MAKE) connect; \
 	fi
+
 
 stop:
 	@if [ $$(docker ps -q -f name=$(CONTAINER_NAME)) ]; then \
@@ -195,17 +225,9 @@ stop:
 	fi
 	@echo "Container $(CONTAINER_NAME) is not running."
 
-run-gpu:
-	@echo "Running Docker container with GUI and GPU support: $(CONTAINER_NAME)"
-	@docker run --name $(CONTAINER_NAME) --rm -it \
-		--user $(shell id -u):$(shell id -g) \
-		-v /var/run/docker.sock:/var/run/docker.sock \
-		-v /tmp/.X11-unix:/tmp/.X11-unix \
-		-v $(TAR_PATH):/save/ \
-		-e DISPLAY=$(DISPLAY) \
-		--gpus all \
-		$(if $(SHARE),-v $(SHARE):/home/user/shared:rw) \
-		$(IMAGE_NAME)
+
+run-gpu: EXTRA_DOCKER_ARGS += --gpus all
+run-gpu: run
 
 ###################################################################################
 ###################################  save  ########################################
@@ -230,4 +252,3 @@ fullclean: clean
 	@echo "Removing the build tar..."
 	@rm -f $(TAR_FILE)
 	@echo "Full cleanup complete."
-
